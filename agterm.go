@@ -171,8 +171,9 @@ func originSessions(dest string, sessions []*Session) map[string]treeSession {
 
 	ctx, cancel := context.WithTimeout(context.Background(), listTimeout)
 	defer cancel()
+	// Same PATH agterm adds for its own remote agtermctl calls: a Mac's non-interactive ssh lacks Homebrew's.
 	out, _ := exec.CommandContext(ctx, "ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=8",
-		dest, strings.Join(script, "; ")).Output()
+		dest, `PATH="$PATH:/usr/local/bin:/opt/homebrew/bin"; `+strings.Join(script, "; ")).Output()
 
 	found := map[string]treeSession{}
 	dec := json.NewDecoder(bytes.NewReader(out))
